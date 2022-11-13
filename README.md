@@ -1,0 +1,2 @@
+# script-sample
+script test
