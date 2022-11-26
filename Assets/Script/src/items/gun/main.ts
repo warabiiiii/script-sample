@@ -5,49 +5,51 @@ import {
   CHARGE_INTERVAL,
   SHOOT_INTERVAL,
 } from "../../constants";
-import { throttle } from "../../utils/throttle";
+import { createThrottle } from "../../utils/throttle";
 
 type State = {
   isUseDown: boolean;
-  chargeCount: number;
+  bulletChargeCount: number;
 };
 type Signal = "signal/action/shoot";
 
 const stateClient = getStateClient<State>("gun");
 const cckClient = getCckClient<Signal>();
 
+const chargeThrottle = createThrottle("charge");
+const shootThrottle = createThrottle("shoot");
+
 const charge = (deltaTime: number) => {
   const isUseDown = stateClient.getState("isUseDown");
   if (!isUseDown) {
     return;
   }
-  throttle(
-    "charge",
-    deltaTime,
+  chargeThrottle(
     () => {
-      const currentCount = stateClient.getState("chargeCount") ?? 0;
-      if (currentCount < BULLET_MAX_COUNT) {
-        stateClient.setState("chargeCount", currentCount + 1);
-        $.log(`charge ${currentCount + 1}`);
+      const bulletChargeCount = stateClient.getState("bulletChargeCount") ?? 0;
+      if (bulletChargeCount < BULLET_MAX_COUNT) {
+        stateClient.setState("bulletChargeCount", bulletChargeCount + 1);
+        $.log(`charge ${bulletChargeCount + 1}`);
       }
     },
+    deltaTime,
     CHARGE_INTERVAL,
   );
 };
+
 const shoot = (deltaTime: number) => {
   const isUseDown = stateClient.getState("isUseDown");
-  const chargeCount = stateClient.getState("chargeCount") ?? 0;
-  if (isUseDown || chargeCount <= 0) {
+  const bulletChargeCount = stateClient.getState("bulletChargeCount") ?? 0;
+  if (isUseDown || bulletChargeCount <= 0) {
     return;
   }
-  throttle(
-    "shoot",
-    deltaTime,
+  shootThrottle(
     () => {
-      $.log(`shoot ${chargeCount}`);
+      $.log(`shoot ${bulletChargeCount}`);
       cckClient.sendSignal("signal/action/shoot");
-      stateClient.setState("chargeCount", chargeCount - 1);
+      stateClient.setState("bulletChargeCount", bulletChargeCount - 1);
     },
+    deltaTime,
     SHOOT_INTERVAL,
   );
 };
