@@ -832,11 +832,12 @@ MonoBehaviour:
     }\n    },\n});\n\nconst getStateClient = (base) => ({\n    setState: (key, value)
     => {\n        $.state[`${base}_${key}`] = value;\n    },\n    getState: (key)
     => {\n        return $.state[`${base}_${key}`];\n    },\n});\n\nconst BULLET_MAX_COUNT
-    = 24;\nconst CHARGE_INTERVAL = 0.02;\nconst SHOOT_INTERVAL = 0.05;\n\nconst throttle
-    = (key, delta, fn, waitSecond) => {\n    var _a;\n    const stateClient = getStateClient(`throttle_${key}`);\n   
-    const currentTime = (_a = stateClient.getState(\"lastTime\")) !== null && _a
-    !== void 0 ? _a : 0;\n    const nextTime = currentTime + delta;\n    stateClient.setState(\"lastTime\",
-    nextTime);\n    if (nextTime >= waitSecond) {\n        stateClient.setState(\"lastTime\",
+    = 24;\nconst CHARGE_INTERVAL = 0.03;\nconst SHOOT_INTERVAL = 0.1;\n\nconst throttle
+    = (key, deltaTime, fn, waitSecond) => {\n    var _a;\n    const stateClient =
+    getStateClient(`throttle_${key}`);\n    const currentPassedTime = (_a = stateClient.getState(\"passedTime\"))
+    !== null && _a !== void 0 ? _a : 0;\n    const nextPassedTime = currentPassedTime
+    + deltaTime;\n    stateClient.setState(\"passedTime\", nextPassedTime);\n   
+    if (nextPassedTime >= waitSecond) {\n        stateClient.setState(\"passedTime\",
     0);\n        fn();\n    }\n};\n\nconst stateClient = getStateClient(\"gun\");\nconst
     cckClient = getCckClient();\nconst charge = (deltaTime) => {\n    const isUseDown
     = stateClient.getState(\"isUseDown\");\n    if (!isUseDown) {\n        return;\n   
