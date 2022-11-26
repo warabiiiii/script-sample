@@ -1,6 +1,6 @@
 import typescript from "@rollup/plugin-typescript";
 
-const itemNames = ["clock"];
+const itemNames = ["clock", "gun"];
 
 /**
  * @type {import('rollup').RollupOptions}
