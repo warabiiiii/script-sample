@@ -11,6 +11,7 @@ type State = {
   isUseDown: boolean;
   bulletChargeCount: number;
 };
+
 type Signal = "signal/action/shoot";
 
 const stateClient = getStateClient<State>("gun");

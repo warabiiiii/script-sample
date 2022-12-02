@@ -10,7 +10,6 @@ const config = itemNames.map((itemName) => ({
   output: {
     format: "cjs",
     file: `dist/${itemName}.js`,
-    //  file: `dist/${itemName}.js`,
   },
   plugins: [typescript()],
 }));
